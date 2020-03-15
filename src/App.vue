@@ -1,5 +1,8 @@
 <template>
-  <router-link to='/'>无情</router-link>
+  <div class="app">
+    <!-- 路由出口 -->
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
