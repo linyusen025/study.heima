@@ -30,7 +30,7 @@
         </el-form-item>
 
         <!-- 协议 -->
-        <el-form-item class="checkboxheight"  prop='isCheck'>
+        <el-form-item class="checkboxheight" prop="isCheck">
           <el-checkbox v-model="form.isCheck">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
@@ -42,16 +42,20 @@
           <el-button class="butclass" type="primary" @click="onSubmit">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button class="butclass" type="primary">注册</el-button>
+          <el-button class="butclass" type="primary" @click='openregister'>注册</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <img class="rightimg" src="../../assets/login_banner_ele.png" alt />
+    <!-- 使用register组件 -->
+    <register ref='register' />
   </div>
 </template>
 
 <script>
+// 导入register组件
+import register from "./components/register.vue";
 export default {
   data() {
     return {
@@ -63,8 +67,9 @@ export default {
         // 验证码
         logincode: "",
         // 复选框
-        isCheck: [],
+        isCheck: []
       },
+
       // 表单验证属性
       rules: {
         // 密码验证,长度在6-10位数
@@ -78,11 +83,21 @@ export default {
           { min: 4, max: 4, message: "长度必须为4个", trigger: "blur" }
         ],
         // 复选框验证,必须为true
-        isCheck:[
-          {type:'array', required: true, message: '请阅读并选择', trigger: 'change' },
+        isCheck: [
+          {
+            type: "array",
+            required: true,
+            message: "请阅读并选择",
+            trigger: "change"
+          }
         ]
       }
     };
+  },
+
+  // 注册register
+  components: {
+    register
   },
   methods: {
     // 表单验证方法  访问dom表单里的validate((valid)=>{},如果为true就验证成功
@@ -93,14 +108,19 @@ export default {
             message: "验证成功",
             type: "success"
           });
-        }else{
-          this.$message.error('验证失败')
+        } else {
+          this.$message.error("验证失败");
         }
       });
+    },
+    // 点击注册按钮访问注册组件
+    openregister(){
+      this.$refs.register.dialogFormVisible = true
     }
   }
 };
 </script>
+
 
 <style lang='less'>
 .login {
