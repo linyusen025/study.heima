@@ -11,7 +11,7 @@
       <!-- element 表单 -->
       <el-form class="inputform" :rules="rules" ref="form" :model="form" label-width="0px">
         <!-- 请输入手机号 -->
-        <el-form-item>
+        <el-form-item prop='phone'>
           <el-input prefix-icon="el-icon-user" placeholder="请输入手机号" v-model="form.phone"></el-input>
         </el-form-item>
         <el-form-item prop="password">
@@ -24,7 +24,7 @@
               <el-input prefix-icon="el-icon-key" placeholder="请输入验证码" v-model="form.logincode"></el-input>
             </el-col>
             <el-col :span="8">
-              <img class="logincode" src="../../assets/login_captcha.png" alt />
+              <img class="logincode" @click='changeImg' :src="imageUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -42,23 +42,41 @@
           <el-button class="butclass" type="primary" @click="onSubmit">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button class="butclass" type="primary" @click='openregister'>注册</el-button>
+          <el-button class="butclass" type="primary" @click="openregister">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <img class="rightimg" src="../../assets/login_banner_ele.png" alt />
     <!-- 使用register组件 -->
-    <register ref='register' />
+    <register ref="register" />
   </div>
 </template>
 
 <script>
 // 导入register组件
 import register from "./components/register.vue";
+// 自定义验证
+// 手机号
+import {checkphone} from '@/utils/mycheck.js'
+// let checkphone = (rule,value,callback)=>{
+//   let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/
+//   if(reg.test(value)==true){
+//     callback()
+//   }else{
+//     callback(new Error('手机格式不正确'))
+//   }
+// }
+// 导入登录接口请求方法
+import {getLogin} from '@/api/login.js'
+// 导入token方法
+import {setToken} from '@/utils/mytoken.js'
+
 export default {
   data() {
     return {
+      // 图形验证码路径
+      imageUrl:process.env.VUE_APP_URL+ '/captcha?type=login&t='+Date.now(),
       form: {
         // 手机号
         phone: "",
@@ -72,6 +90,12 @@ export default {
 
       // 表单验证属性
       rules: {
+        // 手机号
+        phone: [
+          { required: true, message: "手机号不能为空", trigger: "blur" },
+          // 自定义验证
+          { validator: checkphone, trigger: "blur" }
+        ],
         // 密码验证,长度在6-10位数
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },
@@ -99,23 +123,40 @@ export default {
   components: {
     register
   },
+   
+  //  方法
   methods: {
+    // 点击图形切换图形码
+    changeImg(){
+      this.imageUrl=process.env.VUE_APP_URL+ '/captcha?type=login&t='+Date.now()
+    },
     // 表单验证方法  访问dom表单里的validate((valid)=>{},如果为true就验证成功
     onSubmit() {
       this.$refs.form.validate(valid => {
         if (valid == true) {
-          this.$message({
-            message: "验证成功",
-            type: "success"
-          });
+          // this.$message({
+          //   message: "验证成功",
+          //   type: "success"
+          // });
+          getLogin({
+            phone:this.form.phone,
+            password:this.form.password,
+            code:this.form.logincode
+          }).then(response=>{
+            // window.console.log(response)
+              this.$router.push('/index');
+              // 再保存token 键值对形式
+              // window.localStorage.setItem('heima',response.data.data.token)
+              setToken(response.data.data.token)
+          })
         } else {
           this.$message.error("验证失败");
         }
       });
     },
     // 点击注册按钮访问注册组件
-    openregister(){
-      this.$refs.register.dialogFormVisible = true
+    openregister() {
+      this.$refs.register.dialogFormVisible = true;
     }
   }
 };
