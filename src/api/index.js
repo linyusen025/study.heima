@@ -1,7 +1,7 @@
 // 封装首页方法
 // 导入axios
 import axios from 'axios'
-// 导入cookie方法
+// 导入token方法
 import {getToken} from '@/utils/mytoken.js'
 // 创建实例对象
 const instance = axios.create({
@@ -19,4 +19,15 @@ export function getInfo(){
             token:getToken()
         }
     })
+}
+
+// 退出登录方法
+export function getLogout(){
+   return instance({
+       url:'/logout',
+       method:'get',
+       headers:{
+           token:getToken()
+       }
+   })
 }

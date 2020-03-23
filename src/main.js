@@ -15,8 +15,12 @@ Vue.config.productionTip = false
 
 // 5输入router
 import router from './router/index.js'
+// 6导入store
+import store from './store/index.js'
 new Vue({
   render: h => h(App),
   // 5注入
-  router
+  router,
+  // 7注入
+  store
 }).$mount('#app')

@@ -299,6 +299,7 @@ export default {
     height: 39px;
     text-align: center;
   }
+  // 上传头像
   .avatar-uploader {
     text-align: center;
   }

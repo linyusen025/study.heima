@@ -11,7 +11,7 @@
       <!-- element 表单 -->
       <el-form class="inputform" :rules="rules" ref="form" :model="form" label-width="0px">
         <!-- 请输入手机号 -->
-        <el-form-item prop='phone'>
+        <el-form-item prop="phone">
           <el-input prefix-icon="el-icon-user" placeholder="请输入手机号" v-model="form.phone"></el-input>
         </el-form-item>
         <el-form-item prop="password">
@@ -24,7 +24,7 @@
               <el-input prefix-icon="el-icon-key" placeholder="请输入验证码" v-model="form.logincode"></el-input>
             </el-col>
             <el-col :span="8">
-              <img class="logincode" @click='changeImg' :src="imageUrl" alt />
+              <img class="logincode" @click="changeImg" :src="imageUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
@@ -58,7 +58,7 @@
 import register from "./components/register.vue";
 // 自定义验证
 // 手机号
-import {checkphone} from '@/utils/mycheck.js'
+import { checkphone } from "@/utils/mycheck.js";
 // let checkphone = (rule,value,callback)=>{
 //   let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/
 //   if(reg.test(value)==true){
@@ -68,15 +68,15 @@ import {checkphone} from '@/utils/mycheck.js'
 //   }
 // }
 // 导入登录接口请求方法
-import {getLogin} from '@/api/login.js'
+import { getLogin } from "@/api/login.js";
 // 导入token方法
-import {setToken} from '@/utils/mytoken.js'
+import { setToken } from "@/utils/mytoken.js";
 
 export default {
   data() {
     return {
       // 图形验证码路径
-      imageUrl:process.env.VUE_APP_URL+ '/captcha?type=login&t='+Date.now(),
+      imageUrl: process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now(),
       form: {
         // 手机号
         phone: "",
@@ -123,12 +123,13 @@ export default {
   components: {
     register
   },
-   
+
   //  方法
   methods: {
     // 点击图形切换图形码
-    changeImg(){
-      this.imageUrl=process.env.VUE_APP_URL+ '/captcha?type=login&t='+Date.now()
+    changeImg() {
+      this.imageUrl =
+        process.env.VUE_APP_URL + "/captcha?type=login&t=" + Date.now();
     },
     // 表单验证方法  访问dom表单里的validate((valid)=>{},如果为true就验证成功
     onSubmit() {
@@ -139,16 +140,17 @@ export default {
           //   type: "success"
           // });
           getLogin({
-            phone:this.form.phone,
-            password:this.form.password,
-            code:this.form.logincode
-          }).then(response=>{
+            phone: this.form.phone,
+            password: this.form.password,
+            code: this.form.logincode
+          }).then(response => {
             // window.console.log(response)
-              this.$router.push('/index');
-              // 再保存token 键值对形式
-              // window.localStorage.setItem('heima',response.data.data.token)
-              setToken(response.data.data.token)
-          })
+
+            // 再保存token 键值对形式
+            // window.localStorage.setItem('heima',response.data.data.token)
+            setToken(response.data.data.token);
+            this.$router.push("/index");
+          });
         } else {
           this.$message.error("验证失败");
         }

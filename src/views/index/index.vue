@@ -5,23 +5,50 @@
       <el-header>
         <!-- 左边 -->
         <div class="left">
-          <i class="el-icon-s-fold"></i>
+          <i class="el-icon-s-fold" @click="isCollapse = !isCollapse"></i>
           <img src="../../assets/index_logo.png" alt />
           <span>黑马面面</span>
         </div>
         <!-- 右边 -->
         <div class="right">
-          <img :src="userImg" alt />
-          <span class="right_span">{{userInfo.username}}</span>
+          <img :src="this.$store.state.userImg" alt />
+          <span class="right_span">{{this.$store.state.username}}</span>
           <el-button @click="loginout" type="primary" size="mini">退出</el-button>
         </div>
       </el-header>
       <!-- 布局 -->
       <el-container class="contentbox">
-        <!-- 左侧栏 -->
-        <el-aside width="200px">Aside</el-aside>
-        <!-- 右侧栏 -->
-        <el-main>Main</el-main>
+        <!-- 左侧栏导航 -->
+        <el-aside width="auto">
+          <!-- :router=true 开启路由模式,以 index 作为 path 进行路由跳转 -->
+          <el-menu :router="true" class="el-menu-vertical-demo" :collapse="isCollapse">
+            <el-menu-item index="/index/chart">
+              <i class="el-icon-pie-chart"></i>
+              <span slot="title">数据概览</span>
+            </el-menu-item>
+            <el-menu-item index="/index/user">
+              <i class="el-icon-user"></i>
+              <span slot="title">用户列表</span>
+            </el-menu-item>
+            <el-menu-item index="/index/question">
+              <i class="el-icon-edit-outline"></i>
+              <span slot="title">题库列表</span>
+            </el-menu-item>
+            <el-menu-item index="/index/enterprise">
+              <i class="el-icon-office-building"></i>
+              <span slot="title">企业列表</span>
+            </el-menu-item>
+            <el-menu-item index="/index/subject">
+              <i class="el-icon-notebook-2"></i>
+              <span slot="title">学科列表</span>
+            </el-menu-item>
+          </el-menu>
+        </el-aside>
+        <!-- 右侧栏内容 -->
+        <el-main>
+          <!-- 子组件路由出口 -->
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -29,16 +56,18 @@
 
 <script>
 // 导入封装好的首页方法
-import { getInfo } from "@/api/index.js";
+import {  getLogout } from "@/api/index.js";
 // 导入cookie
-import {removeToken} from '@/utils/mytoken.js'
+import { removeToken,  } from "@/utils/mytoken.js";
 export default {
   data() {
     return {
       // 获取用户信息
       userInfo: "",
       // 获取用户头像
-      userImg: ""
+      userImg: "",
+      // 是否折叠导航栏
+      isCollapse: false
     };
   },
   // 方法
@@ -52,13 +81,19 @@ export default {
         type: "warning"
       })
         .then(() => {
-          // 删除cookie
-          removeToken();
-          // 跳转到登录页面
-          this.$router.push('/login');
-          this.$message({
-            type: "success",
-            message: "退出成功!"
+          // 调用退出接口方法
+          getLogout().then(response => {
+            // window.console.log(response)
+            if (response.data.code == 200) {
+              // 删除cookie
+              removeToken();
+              // 跳转到登录页面
+              this.$router.push("/login");
+              this.$message({
+                type: "success",
+                message: "退出成功!"
+              });
+            }
           });
         })
         .catch(() => {
@@ -70,15 +105,33 @@ export default {
     }
   },
   // 进入页面获取用户信息
-  created() {
-    // 调用方法
-    getInfo().then(response => {
-      // window.console.log(response)
-      this.userInfo = response.data.data;
-      //  拼接用户头像路径
-      this.userImg = process.env.VUE_APP_URL + "/" + this.userInfo.avatar;
-    });
-  }
+  // created() {
+  //   // 判断是否携带cookie
+  //   if (!getToken()) {
+  //     // 就提示用户未登录
+  //     this.$message.error("还未登录,请登录");
+  //     // 跳转到登录页
+  //     this.$router.push("/login");
+  //     // 终止后续代码
+  //     return;
+  //   }
+  //   // 调用方法
+  //   getInfo().then(response => {
+  //     // window.console.log(response)
+  //     // 判断用户的token是否为真
+  //     if (response.data.code == 200) {
+  //       this.userInfo = response.data.data;
+  //       //  拼接用户头像路径
+  //       this.userImg = process.env.VUE_APP_URL + "/" + this.userInfo.avatar;
+        
+  //     }else if(response.data.code == 206){
+  //       // 提示用户token错误
+  //       this.$message.error('token错误')
+  //       // 跳转到登录页
+  //       this.$router.push('/login')
+  //     }
+  //   });
+  // }
 };
 </script>
 
@@ -139,5 +192,10 @@ export default {
 .el-main {
   background-color: #e8e9ec;
   color: #333;
+}
+// 左侧导航栏
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
 }
 </style>
