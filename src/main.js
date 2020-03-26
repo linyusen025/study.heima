@@ -6,9 +6,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
-// 导入axios设置全局
-// import axios from 'axios'
-// Vue.prototype.$axios = axios
+// 导入过滤器组件设置全局过滤器
+import './filters/timefilter.js'
 
 
 Vue.config.productionTip = false

@@ -4,7 +4,7 @@ import axios from 'axios'
 // 封装函数
  export function goCode({code,phone}){
     return axios({
-        url:process.env.VUE_APP_URL+`/sendsms`,
+        url:process.env.VUE_APP_URL+ `/sendsms`,
         method:'post',
         data:{
             code:code,
@@ -13,7 +13,7 @@ import axios from 'axios'
         //  携带cookie解决跨域
            withCredentials: true 
     })
-};
+}
 
 // 封装注册用户接口
 export function getRegister({
