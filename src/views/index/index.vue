@@ -11,8 +11,8 @@
         </div>
         <!-- 右边 -->
         <div class="right">
-          <img :src="this.$store.state.userImg" alt />
-          <span class="right_span">{{this.$store.state.username}}</span>
+          <img :src="$store.state.userImg" alt />
+          <span class="right_span">{{$store.state.username}}</span>
           <el-button @click="loginout" type="primary" size="mini">退出</el-button>
         </div>
       </el-header>
@@ -22,26 +22,28 @@
         <el-aside width="auto">
           <!-- :router=true 开启路由模式,以 index 作为 path 进行路由跳转 -->
           <el-menu :router="true" class="el-menu-vertical-demo" :collapse="isCollapse">
-            <el-menu-item index="/index/chart">
-              <i class="el-icon-pie-chart"></i>
-              <span slot="title">数据概览</span>
-            </el-menu-item>
-            <el-menu-item index="/index/user">
+            <template v-for="(item, index) in child" >
+              <el-menu-item :key="index" v-if='item.meta.roles.includes($store.state.role)' :index="item.meta.fullPath">
+                <i :class="item.meta.icon"></i>
+                <span slot="title">{{item.meta.title}}</span>
+              </el-menu-item>
+            </template>
+            <!-- <el-menu-item v-if="['管理员','老师'].includes($store.state.role)" index="/index/user">
               <i class="el-icon-user"></i>
               <span slot="title">用户列表</span>
             </el-menu-item>
-            <el-menu-item index="/index/question">
+            <el-menu-item v-if="['管理员','老师','学生'].includes($store.state.role)" index="/index/question">
               <i class="el-icon-edit-outline"></i>
               <span slot="title">题库列表</span>
             </el-menu-item>
-            <el-menu-item index="/index/enterprise">
+            <el-menu-item v-if="['管理员'].includes($store.state.role)" index="/index/enterprise">
               <i class="el-icon-office-building"></i>
               <span slot="title">企业列表</span>
             </el-menu-item>
-            <el-menu-item index="/index/subject">
+            <el-menu-item v-if="['管理员'].includes($store.state.role)" index="/index/subject">
               <i class="el-icon-notebook-2"></i>
               <span slot="title">学科列表</span>
-            </el-menu-item>
+            </el-menu-item>-->
           </el-menu>
         </el-aside>
         <!-- 右侧栏内容 -->
@@ -56,9 +58,13 @@
 
 <script>
 // 导入封装好的首页方法
-import {  getLogout } from "@/api/index.js";
+import { getLogout } from "@/api/index.js";
 // 导入cookie
-import { removeToken,  } from "@/utils/mytoken.js";
+import { removeToken } from "@/utils/mytoken.js";
+
+// 导入子路由组件
+import child from "@/router/childRouter.js";
+
 export default {
   data() {
     return {
@@ -67,7 +73,9 @@ export default {
       // 获取用户头像
       userImg: "",
       // 是否折叠导航栏
-      isCollapse: false
+      isCollapse: false,
+      //生成导航栏的数据源
+      child: child
     };
   },
   // 方法
@@ -103,7 +111,7 @@ export default {
           });
         });
     }
-  },
+  }
   // 进入页面获取用户信息
   // created() {
   //   // 判断是否携带cookie
@@ -123,7 +131,7 @@ export default {
   //       this.userInfo = response.data.data;
   //       //  拼接用户头像路径
   //       this.userImg = process.env.VUE_APP_URL + "/" + this.userInfo.avatar;
-        
+
   //     }else if(response.data.code == 206){
   //       // 提示用户token错误
   //       this.$message.error('token错误')

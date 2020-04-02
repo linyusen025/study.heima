@@ -1,6 +1,6 @@
 <template>
   <div class="editBox">
-    <el-dialog title="修改学科" :visible.sync="dialogFormVisible">
+    <el-dialog  title="修改学科" :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="rid" label="学科编号" :label-width="formLabelWidth">
           <el-input v-model="form.rid" autocomplete="off"></el-input>

@@ -76,7 +76,7 @@
     <!-- 编辑学科 -->
     <!-- <editEnterprise ref="editEnterprise"></editEnterprise> -->
     <!-- 使用新增&编辑 -->
-    <processEnt ref='processEnt'></processEnt>
+    <processEnt ref="processEnt"></processEnt>
   </div>
 </template>
 
@@ -92,7 +92,7 @@ import {
 // import addEnterprise from "./com/addEnterprise.vue";
 // import editEnterprise from "./com/editEnterprise.vue";
 // 导入新增&编辑组件
-import processEnt from './com/processEnt.vue'
+import processEnt from "./com/processEnt.vue";
 
 export default {
   data() {
@@ -137,12 +137,12 @@ export default {
       // 打开编辑面板
       this.$refs.processEnt.dialogFormVisible = true;
       // 面板显示为编辑
-      this.$refs.processEnt.isEdit=true;
-      // 判断被点击的编辑数据是否是上一次点击的,
-      if (row.id != this.$refs.processEnt.form.id) {
-        // 获取被点击的需要编辑的数据显示在编辑面板上
-        this.$refs.processEnt.form = JSON.parse(JSON.stringify(row));
-      }
+      this.$refs.processEnt.isEdit = true;
+      // 获取要编辑的内容显示在面板上  $nextTick是为了防止把编辑获取到的内容显示为默认form数据
+      this.$refs.processEnt.$nextTick(() => {
+          // 获取被点击的需要编辑的数据显示在编辑面板上
+          this.$refs.processEnt.form = JSON.parse(JSON.stringify(row));
+      });
     },
     // 点击删除按钮
     delBtn(row) {
@@ -179,11 +179,13 @@ export default {
       // 打开新增数据面板
       // this.$refs.addEnterprise.dialogFormVisible = true;
       // 打开面板
-      this.$refs.processEnt.dialogFormVisible=true
+      this.$refs.processEnt.dialogFormVisible = true;
       // 面板显示为新增
-      this.$refs.processEnt.isEdit=false
+      this.$refs.processEnt.isEdit = false;
       // 点击新增按钮需要把面板数据重置
-      this.$refs.processEnt.$refs.form.resetFields()
+      this.$refs.processEnt.$nextTick(() => {
+        this.$refs.processEnt.$refs.form.resetFields();
+      });
     },
     // 获取企业列表
     getEnterpriseList() {

@@ -1,6 +1,6 @@
 <template>
   <div class="addBox">
-    <el-dialog :title="isUser ? '编辑用户' : '新增用户' " :visible.sync="dialogFormVisible">
+    <el-dialog  :title="isUser ? '编辑用户' : '新增用户' " :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="username" label="用户名" :label-width="formLabelWidth">
           <el-input v-model="form.username" autocomplete="off"></el-input>
@@ -12,18 +12,24 @@
           <el-input v-model="form.phone" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item prop="role_id" label="角色" :label-width="formLabelWidth">
-          <el-select v-model="form.role_id">
+          <el-select v-model="form.role_id" placeholder="请选择">
             <el-option label="管理员" :value="2"></el-option>
             <el-option label="老师" :value="3"></el-option>
             <el-option label="学生" :value="4"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户备注" :label-width="formLabelWidth">
+        <el-form-item prop="status" label="状态" :label-width="formLabelWidth">
+          <el-select v-model="form.status" placeholder="请选择">
+            <el-option label="禁用" :value="0"></el-option>
+            <el-option label="启用" :value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="remark" label="用户备注" :label-width="formLabelWidth">
           <el-input v-model="form.remark" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button >取 消</el-button>
         <el-button type="primary" @click="btn">确 定</el-button>
       </div>
     </el-dialog>
@@ -52,7 +58,8 @@ export default {
         phone: "", //手机号
         role_id: "", //角色
         status: "", //状态
-        remark: "" //备注
+        remark: "", //备注
+        id:''
       },
       // 验证规则
       rules: {
@@ -67,43 +74,51 @@ export default {
           { required: true, message: "请输入邮箱名", trigger: "blur" },
           { validator: checkphone, required: true }
         ],
-        role_id: [{ required: true, message: "请选择角色", trigger: "blur" }]
+        role_id: [{ required: true, message: "请选择角色", trigger: "blur" }],
+        status:[],
+        remark:[]
       }
     };
   },
   // 方法
   methods: {
+    // 确定按钮
     btn() {
       //   判断是新增还是编辑  true 为编辑   false 为新增
       if (this.isUser == true) {
         // 编辑
-        apiEditUser(this.form).then(response=>{
-            // window.console.log(response)
-            if(response.data.code==200){
-                // 提示用户
-                this.$message.success('编辑成功')
-                // 关闭面板
-                this.dialogFormVisible=false
-                // 刷新页面数据
-                this.$parent.getUserList()
-            }else{
-                this.$message.error(response.data.message)
-            }
+        apiEditUser(this.form).then(response => {
+          // window.console.log(response)
+          if (response.data.code == 200) {
+            // 提示用户
+            this.$message.success("编辑成功");
+            // 关闭面板
+            this.dialogFormVisible = false;
+            // 刷新页面数据
+            this.$parent.getUserList();
+          } else {
+            this.$message.error(response.data.message);
+          }
         });
       } else {
         // 新增
-        apiAddUser(this.form).then(response=>{
-            // window.console.log(response)
-            if(response.data.code==200){
-                this.$message.success('新增成功')
-                this.dialogFormVisible=false
-                this.$parent.getUserList()
-            }else{
-                this.$message.error(response.data.message)
-            }
-        })
+        apiAddUser(this.form).then(response => {
+          // window.console.log(response)
+          if (response.data.code == 200) {
+            this.$message.success("新增成功");
+            // 关闭新增面板
+            this.dialogFormVisible = false;
+            // 重置面板
+            // this.$refs.form.resetFields();
+            // (this.form.status = ""), (this.form.remark = "");
+            // 刷新页面数据
+            this.$parent.getUserList();
+          } else {
+            this.$message.error(response.data.message);
+          }
+        });
       }
-    }
+    },
   }
 };
 </script>

@@ -45,12 +45,13 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-link type="primary" @click="editBtn(scope.row)">编辑</el-link>&nbsp;
+            <el-link v-if="['管理员','老师'].includes($store.state.role)" type="primary" @click="editBtn(scope.row)">编辑</el-link>&nbsp;
             <el-link
+            v-if="['管理员','老师'].includes($store.state.role)"
               @click="disable(scope.row)"
               type="primary"
             >{{scope.row.status==0 ? '启用' : '禁用'}}</el-link>&nbsp;
-            <el-link @click="delBtn(scope.row)" type="primary">删除</el-link>
+            <el-link v-if="['管理员'].includes($store.state.role)" @click="delBtn(scope.row)" type="primary">删除</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -69,7 +70,7 @@
     </el-card>
     <!-- 使用组件 -->
     <!-- 新增 编辑 组件 -->
-    <processEnt ref="processEnt"></processEnt>
+    <processUse ref="processUse"></processUse>
   </div>
 </template>
 
@@ -77,7 +78,7 @@
 // 导入封装好的方法
 import { apiUserList, apiDelUser, apiStatusUser } from "@/api/use.js";
 // 导入新增&编辑的组件
-import processEnt from "./com/processEnt.vue";
+import processUse from "./com/processUse.vue";
 
 export default {
   data() {
@@ -100,7 +101,7 @@ export default {
   },
   // 注册组件
   components: {
-    processEnt
+    processUse
   },
   // 方法
   methods: {
@@ -118,23 +119,25 @@ export default {
     },
     // 新增按钮
     addUser() {
-      // 打开新增面板
-      this.$refs.processEnt.dialogFormVisible = true
-      // 访问子组件  新增面板
-      this.$refs.processEnt.isUser = false
-      // 点击新增按钮需要重置面板
-      this.$refs.processEnt.$refs.form.resetFields()
+      // 打开面板
+      this.$refs.processUse.dialogFormVisible = true;
+      // 面板显示为新增
+      this.$refs.processUse.isUser = false;
+      // 点击新增按钮需要把面板数据重置  $nextTick是
+      this.$refs.processUse.$nextTick(() => {
+        this.$refs.processUse.$refs.form.resetFields();
+      });
     },
     // 编辑按钮
     editBtn(row) {
       // 打开编辑面板
-      this.$refs.processEnt.dialogFormVisible = true;
+      this.$refs.processUse.dialogFormVisible = true;
       // 访问子组件 编辑面板
-      this.$refs.processEnt.isUser = true;
-      // 获取要编辑的内容显示在面板上
-      if (row.id != this.$refs.processEnt.form.id) {
-        this.$refs.processEnt.form = JSON.parse(JSON.stringify(row));
-      }
+      this.$refs.processUse.isUser = true;
+      // 获取要编辑的内容显示在面板上  $nextTick是为了防止把编辑获取到的内容显示为默认form数据
+      this.$refs.processUse.$nextTick(() => {
+          this.$refs.processUse.form = JSON.parse(JSON.stringify(row));
+      });
     },
     //  删除按钮
     delBtn(row) {

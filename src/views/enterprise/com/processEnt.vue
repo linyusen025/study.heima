@@ -1,6 +1,6 @@
 <template>
   <div class="addBox">
-    <el-dialog :title="isEdit ? '编辑面板' : '新增面板' " :visible.sync="dialogFormVisible">
+    <el-dialog  :title="isEdit ? '编辑面板' : '新增面板' " :visible.sync="dialogFormVisible">
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="eid" label="企业编号" :label-width="formLabelWidth">
           <el-input v-model="form.eid" autocomplete="off"></el-input>
@@ -19,7 +19,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button >取 消</el-button>
         <el-button type="primary" @click="proBtn">确 定</el-button>
       </div>
     </el-dialog>
@@ -100,7 +100,7 @@ export default {
           }
         });
       }
-    }
+    },
   }
 };
 </script>
